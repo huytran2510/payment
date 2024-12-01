@@ -2,10 +2,16 @@ const axios = require("axios")
 const express = require("express")
 const app = express()
 const crypto = require("crypto")
+const cors = require('cors');
 
 app.use(express.json()); // Thêm dấu ngoặc tròn ở đây
 app.use(express.urlencoded({ extended: true })); // Thêm dấu ngoặc tròn ở đây
-app.post("/momo/payment", async (req, res) => {
+app.use(cors({
+    origin: 'http://localhost:3000', // Chỉ cho phép yêu cầu từ localhost:3000
+    methods: ['GET', 'POST'],       // Các phương thức HTTP được phép
+    allowedHeaders: ['Content-Type', 'Authorization'], // Các header được phép
+}));
+app.post("/payment", async (req, res) => {
     {
         //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
         //parameters
@@ -14,7 +20,7 @@ app.post("/momo/payment", async (req, res) => {
         var orderInfo = 'pay with MoMo';
         var partnerCode = 'MOMO';
         var redirectUrl = 'http://localhost:3000/menu';
-        var ipnUrl = 'https://09a6-42-119-80-31.ngrok-free.app/callback';
+        var ipnUrl = 'https://ec15-113-172-66-191.ngrok-free.app/callback';
         var requestType = "payWithMethod";
         var amount = '50000';
         var orderId = partnerCode + new Date().getTime();
@@ -81,7 +87,7 @@ app.post("/momo/payment", async (req, res) => {
     }
 })
 
-app.post("/momo/callback", async (req,res) => {
+app.post("/callback", async (req,res) => {
     console.log("callback:: ")
     console.log(req.body);
 
@@ -89,8 +95,6 @@ app.post("/momo/callback", async (req,res) => {
 })
 
 app.post("")
-
-
 
 
 app.listen(5000, () => {
