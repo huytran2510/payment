@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 
-app.post("/momo/payment", async (req, res) => {
+app.post("/momo/payment/:amount", async (req, res) => {
     {
         //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
         //parameters
@@ -28,7 +28,7 @@ app.post("/momo/payment", async (req, res) => {
         var redirectUrl = 'http://localhost:3000/success';
         var ipnUrl = 'https://7f4f-1-53-50-45.ngrok-free.app/momo/callback';
         var requestType = "payWithMethod";
-        var amount = '50000';
+        var amount = req.params.amount;
         var orderId = partnerCode + new Date().getTime();
         var requestId = orderId;
         var extraData = '';
@@ -99,38 +99,12 @@ const wss = new WebSocket.Server({port: 8080});
 let clients = [];
 
 
-wss.on('connection', (ws) => {
-    console.log('Client connected');
-    clients.push(ws);  // Thêm client vào mảng
-
-    // Lắng nghe khi client gửi tin nhắn
-    ws.on('message', (message) => {
-        console.log('Received message:', message);
-    });
-
-    // Xử lý khi client đóng kết nối
-    ws.on('close', () => {
-        console.log('Client disconnected');
-        // Xóa client khỏi mảng
-        clients = clients.filter(client => client !== ws);
-    });
-});
-
-function sendMessageToClients(req) {
-    clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-            console.log('Sending message:', req.body);
-            client.send(JSON.stringify(req.body));
-        }
-    });
-}
 
 
 
 app.post("/momo/callback", async (req, res) => {
     console.log("callback:: ")
     console.log(req.body);
-    sendMessageToClients(req);
 
     return res.status(200).json(req.body)
 })
